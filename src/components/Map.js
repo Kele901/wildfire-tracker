@@ -222,6 +222,11 @@ const WeatherOverlay = ({ fires }) => {
       try {
         const apiKey = process.env.REACT_APP_OPENWEATHER_API_KEY;
         
+        // Add debug logging
+        console.log('Environment:', process.env.NODE_ENV);
+        console.log('API Key exists:', !!apiKey);
+        console.log('API Key length:', apiKey ? apiKey.length : 0);
+        
         if (!apiKey) {
           console.error('API Key missing. Current environment:', process.env.NODE_ENV);
           setError('OpenWeatherMap API key is not configured. Please check the environment variables.');
@@ -235,7 +240,7 @@ const WeatherOverlay = ({ fires }) => {
         
         if (!currentResponse.ok) {
           const errorData = await currentResponse.json();
-          throw new Error(errorData.message || 'Weather data fetch failed');
+          throw new Error(`Weather API Error: ${errorData.message || 'Weather data fetch failed'} (Status: ${currentResponse.status})`);
         }
         const currentData = await currentResponse.json();
 
@@ -246,7 +251,7 @@ const WeatherOverlay = ({ fires }) => {
 
         if (!forecastResponse.ok) {
           const errorData = await forecastResponse.json();
-          throw new Error(errorData.message || 'Forecast data fetch failed');
+          throw new Error(`Forecast API Error: ${errorData.message || 'Forecast data fetch failed'} (Status: ${forecastResponse.status})`);
         }
         const forecastData = await forecastResponse.json();
 
