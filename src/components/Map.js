@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, useMap, Circle, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import 'leaflet.heat';
-import AdComponent from './AdComponent';
 
 // Fix Leaflet icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -221,15 +220,10 @@ const WeatherOverlay = ({ fires }) => {
     const fetchWeatherData = async (lat, lon) => {
       try {
         const apiKey = process.env.REACT_APP_OPENWEATHER_API_KEY;
-        
-        // Add debug logging
-        console.log('Environment:', process.env.NODE_ENV);
-        console.log('API Key exists:', !!apiKey);
-        console.log('API Key length:', apiKey ? apiKey.length : 0);
+        console.log('API Key:', apiKey); // Debug log
         
         if (!apiKey) {
-          console.error('API Key missing. Current environment:', process.env.NODE_ENV);
-          setError('OpenWeatherMap API key is not configured. Please check the environment variables.');
+          setError('OpenWeatherMap API key is missing');
           return;
         }
 
@@ -240,7 +234,7 @@ const WeatherOverlay = ({ fires }) => {
         
         if (!currentResponse.ok) {
           const errorData = await currentResponse.json();
-          throw new Error(`Weather API Error: ${errorData.message || 'Weather data fetch failed'} (Status: ${currentResponse.status})`);
+          throw new Error(errorData.message || 'Weather data fetch failed');
         }
         const currentData = await currentResponse.json();
 
@@ -251,7 +245,7 @@ const WeatherOverlay = ({ fires }) => {
 
         if (!forecastResponse.ok) {
           const errorData = await forecastResponse.json();
-          throw new Error(`Forecast API Error: ${errorData.message || 'Forecast data fetch failed'} (Status: ${forecastResponse.status})`);
+          throw new Error(errorData.message || 'Forecast data fetch failed');
         }
         const forecastData = await forecastResponse.json();
 
@@ -282,7 +276,7 @@ const WeatherOverlay = ({ fires }) => {
         setError(null);
       } catch (error) {
         console.error('Error fetching weather data:', error);
-        setError(`Failed to fetch weather data: ${error.message}. Please check your API key configuration.`);
+        setError(`Failed to fetch weather data: ${error.message}`);
       }
     };
 
@@ -545,15 +539,6 @@ const StatsOverlay = ({ fires }) => {
           <div className="stat-subtitle">Click for details</div>
         </div>
       </div>
-      
-      {/* Add vertical ad in stats overlay */}
-      <AdComponent 
-        slot="vertical-ad-slot" 
-        format="vertical"
-        responsive={false}
-        style={{ width: '300px', height: '250px' }}
-      />
-      
       <WeatherOverlay fires={fires} />
       {showCountryDetails && (
         <div className="country-details">
@@ -626,42 +611,26 @@ const Map = ({ fires }) => {
   });
 
   return (
-    <>
-      {/* Top horizontal ad */}
-      <AdComponent 
-        slot="horizontal-top-ad-slot"
-        format="horizontal"
-        style={{ height: '90px', marginBottom: '20px' }}
-      />
-
-      <div style={{ width: '100%', height: '90vh', position: 'relative' }}>
-        <MapContainer 
-          center={[20, 0]} 
-          zoom={3} 
-          style={{ height: '100%', width: '100%' }}
-          minZoom={2}
-          maxZoom={18}
-          whenCreated={(map) => {
-            map.invalidateSize();
-          }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <HeatLayer points={points} />
-          <FireMarkers fires={fires} />
-        </MapContainer>
-        <StatsOverlay fires={fires} />
-      </div>
-
-      {/* Bottom horizontal ad */}
-      <AdComponent 
-        slot="horizontal-bottom-ad-slot"
-        format="horizontal"
-        style={{ height: '90px', marginTop: '20px' }}
-      />
-    </>
+    <div style={{ width: '100%', height: '90vh', position: 'relative' }}>
+      <MapContainer 
+        center={[20, 0]} 
+        zoom={3} 
+        style={{ height: '100%', width: '100%' }}
+        minZoom={2}
+        maxZoom={18}
+        whenCreated={(map) => {
+          map.invalidateSize();
+        }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        <HeatLayer points={points} />
+        <FireMarkers fires={fires} />
+      </MapContainer>
+      <StatsOverlay fires={fires} />
+    </div>
   );
 };
 
