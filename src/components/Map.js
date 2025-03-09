@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, useMap, Circle, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import 'leaflet.heat';
+import AdComponent from './AdComponent';
 
 // Fix Leaflet icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -539,6 +540,15 @@ const StatsOverlay = ({ fires }) => {
           <div className="stat-subtitle">Click for details</div>
         </div>
       </div>
+      
+      {/* Add vertical ad in stats overlay */}
+      <AdComponent 
+        slot="vertical-ad-slot" 
+        format="vertical"
+        responsive={false}
+        style={{ width: '300px', height: '250px' }}
+      />
+      
       <WeatherOverlay fires={fires} />
       {showCountryDetails && (
         <div className="country-details">
@@ -611,26 +621,42 @@ const Map = ({ fires }) => {
   });
 
   return (
-    <div style={{ width: '100%', height: '90vh', position: 'relative' }}>
-      <MapContainer 
-        center={[20, 0]} 
-        zoom={3} 
-        style={{ height: '100%', width: '100%' }}
-        minZoom={2}
-        maxZoom={18}
-        whenCreated={(map) => {
-          map.invalidateSize();
-        }}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <HeatLayer points={points} />
-        <FireMarkers fires={fires} />
-      </MapContainer>
-      <StatsOverlay fires={fires} />
-    </div>
+    <>
+      {/* Top horizontal ad */}
+      <AdComponent 
+        slot="horizontal-top-ad-slot"
+        format="horizontal"
+        style={{ height: '90px', marginBottom: '20px' }}
+      />
+
+      <div style={{ width: '100%', height: '90vh', position: 'relative' }}>
+        <MapContainer 
+          center={[20, 0]} 
+          zoom={3} 
+          style={{ height: '100%', width: '100%' }}
+          minZoom={2}
+          maxZoom={18}
+          whenCreated={(map) => {
+            map.invalidateSize();
+          }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <HeatLayer points={points} />
+          <FireMarkers fires={fires} />
+        </MapContainer>
+        <StatsOverlay fires={fires} />
+      </div>
+
+      {/* Bottom horizontal ad */}
+      <AdComponent 
+        slot="horizontal-bottom-ad-slot"
+        format="horizontal"
+        style={{ height: '90px', marginTop: '20px' }}
+      />
+    </>
   );
 };
 
