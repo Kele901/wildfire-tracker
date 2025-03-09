@@ -23,7 +23,7 @@ const AdComponent = ({ slot, format = 'auto', responsive = true, style = {} }) =
       <ins
         className="adsbygoogle"
         style={adStyle}
-        data-ad-client="YOUR-ADSENSE-ID"
+        data-ad-client="ca-pub-1726759813423594"
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive={responsive}
