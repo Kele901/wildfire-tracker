@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Map from './components/Map';
 import Loader from './components/Loader';
 import Header from './components/Header';
+import AdSense from './components/AdSense';
 import './App.css';
 
 function App() {
@@ -10,6 +11,13 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Add AdSense script
+    const script = document.createElement('script');
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1726759813423594';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    document.head.appendChild(script);
+
     const fetchFires = async () => {
       try {
         const response = await fetch(
@@ -29,7 +37,11 @@ function App() {
     fetchFires();
     // Refresh data every 5 minutes
     const interval = setInterval(fetchFires, 300000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Clean up script
+      document.head.removeChild(script);
+    };
   }, []);
 
   if (error) {
@@ -39,7 +51,19 @@ function App() {
   return (
     <div className="app">
       <Header />
+      <div className="ad-banner-top">
+        <AdSense
+          adSlot="4834833787"
+          style={{ display: 'block', textAlign: 'center' }}
+        />
+      </div>
       {loading ? <Loader /> : <Map fires={fires} />}
+      <div className="ad-banner-bottom">
+        <AdSense
+          adSlot="4834833787"
+          style={{ display: 'block', textAlign: 'center' }}
+        />
+      </div>
     </div>
   );
 }
